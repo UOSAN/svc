@@ -12,9 +12,9 @@ function [task] = runSVC(subNumArg, waveNumArg, runNumArg)
 %
 %    input text columns (%u,%u,%u,%u,%u,%f%f) 
 %       1. trialNum
-%       2. condition (1/2 == self (good/cool), 3/4 == change (good/cool), !!5/6... )
+%       2. condition (1-3 == self (good/cool), 4-6 == change (good/cool))
 %       3. jitter
-%       4. reverse coded (0 == normal, 1 == reverse coded) !!Meaningful?
+%       4. reverse coded (0 == normal, 1 == reverse coded) 
 %       5. syllables
 %       6. trait (string w/ trait adjective)
 %

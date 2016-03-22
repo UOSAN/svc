@@ -5,7 +5,7 @@ NRealSubsTotal = 250;
 NWavesTotal = 3;
 NSubsTotal = NRealSubsTotal * NWavesTotal;
 GAoutputDirectory = 'GAoutput';
-load('gammaDists.mat', 'gammaSVC');
+load('gammaDists.mat', 'gammaSVC'); 
 fid = fopen(svcTextFile,'r');
 svcCell = textscan(fid, '%s%u8%u8%u8','Delimiter',',');
 fclose(fid);
@@ -13,7 +13,14 @@ goodTraits = svcCell{1}(svcCell{2}==1);
 withdrwnTraits = svcCell{1}(svcCell{2}==2);
 aggTraits = svcCell{1}(svcCell{2}==3);
 
+% Generate per-run prompt-type conditions to words depending on their trait-category
+% then loop through per run to pull out the right words per block.
+% prompt block ordering comes from the GA input.
+
+% get number of runs = number of prompt-types
+
 for dCount = 1:NSubsTotal
+    
   %% shuffle em' up & split across runs
   % (we can grab the other info from svcCell using strcmp later...)
   aggTraits = Shuffle(aggTraits);
