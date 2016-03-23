@@ -8,7 +8,7 @@ function [task] = runSVC(subNumArg, waveNumArg, runNumArg)
 %
 % dependencies:
 %
-%--> (subID)_svc_(runNum).txt = comma delimited text with per trial input
+%--> (subID)_wave(waveNum)_svc_(runNum).txt = comma delimited text with per trial input
 %
 %    input text columns (%u,%u,%u,%u,%u,%f%f) 
 %       1. trialNum
@@ -18,9 +18,9 @@ function [task] = runSVC(subNumArg, waveNumArg, runNumArg)
 %       5. syllables
 %       6. trait (string w/ trait adjective)
 %
-%-->  DRSstim.mat = structure w/ precompiled image matrices (coins, hands, etc.)
+%-->  SVCstim.mat = structure w/ precompiled image matrices (prompt icons, yes, no etc.)
 %
-%--> (subID)_info.mat = structure w/ subject specific info
+%--> (subID)_wave(waveNum)_info.mat = structure w/ subject specific info
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch nargin
@@ -52,32 +52,35 @@ Screen('Preference', 'SkipSyncTests', 1);
 
 %% get subID from subNum
 if subNum < 10
-  subID = ['tag00',num2str(subNum)];
+  subID = ['svc00',num2str(subNum)];
 elseif subNum < 100
-  subID = ['tag0',num2str(subNum)];
+  subID = ['svc0',num2str(subNum)];
 else
-  subID = ['tag',num2str(subNum)];
+  subID = ['svc',num2str(subNum)];
 end
+
 % get thisRun from runNum
 thisRun = ['run',num2str(runNum)];
-% load subject's drs structure
+
+% load subject's svc structure
 subInfoFile = ['input', filesep, subID,'_wave_',num2str(waveNum),'_info.mat'];
 load(subInfoFile);
 thisRun = ['run',num2str(runNum)];
 if strcmp(thisRun,'run0')
-  inputTextFile = [drs.input.path,filesep,'svc_practice_input.txt'];
-  subOutputMat = [drs.output.path,filesep,subID,'_wave_',num2str(waveNum),'_rpe_',thisRun,'.mat'];
+  inputTextFile = [svc.input.path,filesep,'svc_practice_input.txt'];
+  subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_rpe_',thisRun,'.mat'];
 else
-  subOutputMat = [drs.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'.mat'];
-  inputTextFile = [drs.input.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_input.txt'];
-  outputTextFile = [drs.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_output.txt'];
+  subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'.mat'];
+  inputTextFile = [svc.input.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_input.txt'];
+  outputTextFile = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_output.txt'];
 end
 
 % load trialMatrix
 fid=fopen(inputTextFile);
 trialMatrix=textscan(fid,'%u%u%f%u%u%s\n','delimiter',',');
 fclose(fid);
-%% store info from trialMatrix in drs structure
+
+%% store info from trialMatrix in svc structure
 task.input.raw = [trialMatrix{1} trialMatrix{2} trialMatrix{3} trialMatrix{4} trialMatrix{5}];
 task.input.condition = trialMatrix{2};
 task.input.jitter = trialMatrix{3};
@@ -86,6 +89,7 @@ task.input.syllables = trialMatrix{5};
 task.input.trait = trialMatrix{6};
 numTrials = length(trialMatrix{1});
 task.output.raw = NaN(numTrials,13);
+
 %% set up screen preferences, rng
 Screen('Preference', 'VisualDebugLevel', 1);
 PsychDefaultSetup(2); % automatically call KbName('UnifyKeyNames'), set colors from 0-1;
@@ -93,36 +97,35 @@ rng('shuffle'); % if incompatible with older machines, use >> rand('seed', sum(1
 screenNumber = max(Screen('Screens'));
 % open a window, set more params
 %[win,winBox] = PsychImaging('OpenWindow',screenNumber,bg,[0 0 1920/2 1080/2],[],'kPsychGUIWindow');
-[win,winBox] = PsychImaging('OpenWindow',screenNumber,drs.stim.bg);
+[win,winBox] = PsychImaging('OpenWindow',screenNumber,svc.stim.bg);
+
 % flip to get ifi
-
 HideCursor();
-
 Screen('Flip', win);
-drs.stim.ifi = Screen('GetFlipInterval', win);
+svc.stim.ifi = Screen('GetFlipInterval', win);
 Screen('TextSize', win, 50);
 Screen('TextFont', win, 'Arial');
 Screen('BlendFunction', win, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
-drs.keys = initKeys;
-inputDevice = drs.keys.deviceNum;
+svc.keys = initKeys;
+inputDevice = svc.keys.deviceNum;
 
-devices=PsychHID('Devices');
-for deviceCount=1:length(devices),
-  % Just get the local keyboard
-  if ((strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Mitsumi Electric')) ...
-          || (strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Apple, Inc'))),
-    keys.bbox = deviceCount;
-    keys.trigger = KbName('t'); % use 't' as KbTrigger
-    internalKeyboardDevice=deviceCount;
-  end
-end
+% devices=PsychHID('Devices');
+% for deviceCount=1:length(devices),
+%   % Just get the local keyboard
+%   if ((strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Mitsumi Electric')) ...
+%           || (strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Apple, Inc.'))),
+%     keys.bbox = deviceCount;
+%     keys.trigger = KbName('t'); % use 't' as KbTrigger
+%     internalKeyboardDevice=deviceCount;
+%   end
+% end
 
-% to inform subject about upcoming task
-prefaceText = ['Coming up... ','Change Task: ',thisRun, '\n\n(left for ''yes'', right for ''no'') '];
-DrawFormattedText(win, prefaceText, 'center', 'center', drs.stim.orange);
-[~,programOnset] = Screen('Flip',win);
-KbStrokeWait(internalKeyboardDevice);
+% % to inform subject about upcoming task
+% prefaceText = ['Coming up... ','Change Task: ',thisRun, '\n\n(left for ''yes'', right for ''no'') '];
+% DrawFormattedText(win, prefaceText, 'center', 'center', svc.stim.orange);
+% [~,programOnset] = Screen('Flip',win);
+% KbStrokeWait(internalKeyboardDevice);
 
 %% present during multiband calibration (time shortened for debug)
 % skip the long wait for training session
@@ -131,36 +134,20 @@ if runNum == 0
 else
     calibrationTime = 17;
 end
+
 % remind em' not to squirm!
 DrawFormattedText(win, 'Getting scan ready...\n\n hold really still!',...
-  'center', 'center', drs.stim.white);
+  'center', 'center', svc.stim.white);
 [~,calibrationOnset] = Screen('Flip', win);
 
-%WaitSecs(calibrationTime);
-%DrawFormattedText(win, 'Self or Change Task\n\n Starting in... 5',...
-%  'center', 'center', drs.stim.white);
-%Screen('Flip', win);
-%WaitSecs(1);
-%DrawFormattedText(win, 'Self or Change Task\n\n Starting in... 4',...
-%  'center', 'center', drs.stim.white);
-%Screen('Flip', win);
-%DrawFormattedText(win, 'Self or Change Task\n\n Starting in... 3',...
-%  'center', 'center', drs.stim.white);
-%WaitSecs(1);
-%Screen('Flip', win);
-%DrawFormattedText(win, 'Self or Change Task\n\n Get Ready!',...
-%  'center', 'center', drs.stim.white);
-%WaitSecs(1);
-%Screen('Flip', win);
-
 % trigger pulse code (disabled for debug)
-
-disp(drs.keys.trigger);
+disp(svc.keys.trigger);
 if runNum == 0
+    internalKeyboardDevice = inputDevice; % added this statement so I could run it on my laptop. Can delete later -DCos 
     KbStrokeWait(internalKeyboardDevice);
 else
-    KbTriggerWait(drs.keys.trigger,inputDevice); % note: no problems leaving out 'inputDevice' in the mock, but MUST INCLUDE FOR SCANNER
-    disabledTrigger = DisableKeysForKbCheck(drs.keys.trigger);
+    KbTriggerWait(svc.keys.trigger,inputDevice); % note: no problems leaving out 'inputDevice' in the mock, but MUST INCLUDE FOR SCANNER
+    disabledTrigger = DisableKeysForKbCheck(svc.keys.trigger);
     triggerPulseTime = GetSecs;
     disp('trigger pulse received, starting experiment');
 end
@@ -168,14 +155,15 @@ Screen('Flip', win);
 
 %% define keys to listen for, create KbQueue (coins & text drawn while it warms up)
 keyList = zeros(1,256);
-keyList(drs.keys.buttons)=1;
-keyList(drs.keys.kill)=1;
-leftKeys = ([drs.keys.b0 drs.keys.b1 drs.keys.b2 drs.keys.b3 drs.keys.b4 drs.keys.left]);
-rightKeys = ([drs.keys.b5 drs.keys.b6 drs.keys.b7 drs.keys.b8 drs.keys.b9 drs.keys.right]);
+keyList(svc.keys.buttons)=1;
+keyList(svc.keys.kill)=1;
+leftKeys = ([svc.keys.b0 svc.keys.b1 svc.keys.b2 svc.keys.b3 svc.keys.b4 svc.keys.left]);
+rightKeys = ([svc.keys.b5 svc.keys.b6 svc.keys.b7 svc.keys.b8 svc.keys.b9 svc.keys.right]);
 KbQueueCreate(inputDevice, keyList);
 traitSkips = [];
 blockStartTrials = 1:5:50;
 loopStartTime = GetSecs;
+
 %% trial loop
 for tCount = 1:numTrials
   %% set variables for this trial
@@ -190,44 +178,48 @@ for tCount = 1:numTrials
   if find(blockStartTrials==tCount)
     switch condition
     case 1 
-      iconMatrix = drs.stim.promptMatrix{1};
+      iconMatrix = svc.stim.promptMatrix{1};
       promptText = 'true about me?';
-      promptColor = drs.stim.promptColors{1};
+      promptColor = svc.stim.promptColors{1};
     case 2 
-      iconMatrix = drs.stim.promptMatrix{1};
+      iconMatrix = svc.stim.promptMatrix{1};
       promptText = 'true about me?';
-      promptColor = drs.stim.promptColors{1};
+      promptColor = svc.stim.promptColors{1};
     case 3
-      iconMatrix = drs.stim.promptMatrix{1};
+      iconMatrix = svc.stim.promptMatrix{1};
       promptText = 'true about me?';
-      promptColor = drs.stim.promptColors{1};
+      promptColor = svc.stim.promptColors{1};
     case 4
-      iconMatrix = drs.stim.promptMatrix{2};
+      iconMatrix = svc.stim.promptMatrix{2};
       promptText = 'can it change?';
-      promptColor = drs.stim.promptColors{2};
+      promptColor = svc.stim.promptColors{2};
     case 5
-      iconMatrix = drs.stim.promptMatrix{2};
+      iconMatrix = svc.stim.promptMatrix{2};
       promptText = 'can it change?';
-      promptColor = drs.stim.promptColors{2};
+      promptColor = svc.stim.promptColors{2};
     case 6
-      iconMatrix = drs.stim.promptMatrix{2};
+      iconMatrix = svc.stim.promptMatrix{2};
       promptText = 'can it change?';
-      promptColor = drs.stim.promptColors{2};
+      promptColor = svc.stim.promptColors{2};
     end
+    
     % draw prompt with instructions
     iconTex = Screen('MakeTexture',win,iconMatrix);
-    Screen('DrawTexture',win,iconTex,[],drs.stim.box.prompt);
+    Screen('DrawTexture',win,iconTex,[],svc.stim.box.prompt);
     Screen('TextSize', win, 80);
     Screen('TextFont', win, 'Arial');
     DrawFormattedText( win, promptText, 'center', 'center', promptColor );
     Screen('Flip',win);
     WaitSecs(4.7);
   end
+  
   %% call draw function
-  drawTrait(win,drs.stim,trait,condition,[0.5 0.5]);
+  drawTrait(win,svc.stim,trait,condition,[0.5 0.5]);
   KbQueueStart(inputDevice);
+  
   % flip the screen to show trait
   [~,traitOnset] = Screen('Flip',win);
+  
   %loop for response
   while (GetSecs - traitOnset) < 4.7
     [ pressed, firstPress]=KbQueueCheck(inputDevice);
@@ -246,11 +238,11 @@ for tCount = 1:numTrials
             traitResponse = 2;
         end
          chose=1;
-        drawTraitFeedback(win,drs.stim,trait,condition,traitResponse);
+        drawTraitFeedback(win,svc.stim,trait,condition,traitResponse);
       end   
   end
   KbQueueStop(inputDevice);
-  drawTrait(win,drs.stim,' ',condition,[0.5 0.5]);
+  drawTrait(win,svc.stim,' ',condition,[0.5 0.5]);
   Screen('Flip',win);
   if traitJitter > 4.7
     [~,traitOffset] = Screen('Flip',win);
@@ -258,6 +250,7 @@ for tCount = 1:numTrials
     traitOffset = GetSecs;
   end
   WaitSecs('UntilTime',(traitOnset + 4.7 + traitJitter));
+  
   %%
   if traitResponse == 0
     traitSkips = [traitSkips tCount];
@@ -277,7 +270,7 @@ KbQueueRelease(inputDevice);
 % End of experiment screen. We clear the screen once they have made their
 % response
 DrawFormattedText(win, 'Scan Complete! \n\nWe will check in momentarily...',...
-    'center', 'center', drs.stim.white);
+    'center', 'center', svc.stim.white);
 Screen('Flip', win);
 
 if runNum ~= 0

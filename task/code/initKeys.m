@@ -31,7 +31,13 @@ for deviceCount=1:length(devices),
     deviceNum = deviceCount;
     break,
   elseif ((strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Mitsumi Electric')) ...
-          || (strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Apple, Inc'))),
+          || (strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Apple, Inc.'))),
+    keys.bbox = deviceCount;
+    keys.trigger = KbName('t'); % use 't' as KbTrigger
+    detectButtonBox = false;
+    deviceNum=deviceCount;
+  else
+    % added this statement so I could run it on my laptop. Can delete later -DCos 
     keys.bbox = deviceCount;
     keys.trigger = KbName('t'); % use 't' as KbTrigger
     detectButtonBox = false;
@@ -40,7 +46,7 @@ for deviceCount=1:length(devices),
 end
 
 if (~detectButtonBox)
-     fprintf('Using Device #%d: internal %s\n',deviceCount,devices(deviceCount).usageName);
+    fprintf('Using Device #%d: internal %s\n',deviceCount,devices(deviceCount).usageName);
 end
 
 keys.b1 = KbName('1!');   % Keyboard 1

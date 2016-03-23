@@ -1,4 +1,4 @@
-~/DRS/task/code
+~/SVC/task/code
 ===
 
-Functions and scripts to run DRS experiments.
+Functions and scripts to run SVC experiment.

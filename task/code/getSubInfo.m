@@ -1,8 +1,8 @@
-function [ drs ] = getSubInfo()
+function [ svc ] = getSubInfo()
 % GETSUBINFO.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   usage: demo = getSubInfo()
-%   takes no input, saves harvested subject info dialog to drs structure
+%   takes no input, saves harvested subject info dialog to svc structure
 %
 %   author: wem3
 %   written: 141031
@@ -10,53 +10,39 @@ function [ drs ] = getSubInfo()
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % prompt for study directory (highest level)
-studyDir = uigetdir('/vxfsvol/home/research/dsnlab/Studies/TAG/code/task/DRS','Select study directory');
+studyDir = uigetdir('~/Documents/code/svc/','Select study directory');
 
 % interactive dialog to get demographic info
 prompt = {...
 'subID: ',...,
-'friend: ',...
 'experimentor: '...,
 'wave: '};
+
 dTitle = 'define subject specific variables';
 nLines = 1;
+
 % defaults
-def = { '999' , 'Ally' , 'TAG', '1' };
+def = { '999' , 'SVC', '1' };
 manualInput = inputdlg(prompt,dTitle,nLines,def);
+
 % the order is funky here because we want the structure output 
 % to be readily readable in summary form (so this, err, isn't)
-drs.subID = ['tag',manualInput{1}];
-drs.studyDir = studyDir;
-drs.subNum = str2num(manualInput{1});
-drs.waveNum = str2num(manualInput{4});
-drs.input.path = [studyDir,filesep,'task',filesep,'input'];
-drs.output.path = [studyDir,filesep,'task',filesep,'output'];
-% stimFile created by makeDRSstimulus.m
-stimFile = [studyDir,filesep,'task',filesep,'DRSstim.mat'];
+svc.subID = ['svc',manualInput{1}];
+svc.studyDir = studyDir;
+svc.subNum = str2num(manualInput{1});
+svc.waveNum = str2num(manualInput{3});
+svc.input.path = [studyDir,filesep,'task',filesep,'input'];
+svc.output.path = [studyDir,filesep,'task',filesep,'output'];
+
+% stimFile created by makesvcstimulus.m
+stimFile = [studyDir,filesep,'task',filesep,'SVCstim.mat'];
 load(stimFile);
 
 demo.name = '';
-demo.friendEmail = '';
-demo.parentEmail = '';
-demo.exptID = manualInput{3};
+demo.exptID = manualInput{2};
 demo.exptDate = datestr(now);
-drs.friend = manualInput{2};
-drs.parent = '';
+svc.demo = demo;
 
-% now that we know friend/parent names, we can finish the stimulus...
-selfText = 'keep it private';
-friendText = ['share with ', drs.friend];
-parentText = ['share with ', drs.parent];
-drs.demo = demo;
-stim.targetText = {selfText, friendText, parentText};
-
-% randomize colors, make boxen for dsd (so we can draw colored hands later)
-stim.targetColors = Shuffle({stim.sky,stim.sky,stim.sky});
-for boxCount = 1:3
-  for rgbCount = 1:3
-    stim.targetBoxen{boxCount}(:,:,rgbCount) = ones(200,200).*stim.targetColors{boxCount}(rgbCount);
-  end
-end
 
 % make icons for svc (there are only two, their colors don't change)
 % but make boxen 3 & 4 out of convenience for condition code
@@ -69,10 +55,10 @@ stim.promptMatrix{1}(:,:,4) = (stim.alpha.self) ./255;
 stim.promptMatrix{2}(:,:,4) = (stim.alpha.delta) ./255;
 
 
-% store stim in drs and save
-drs.stim = stim;
-saveFile = [drs.input.path,filesep,[drs.subID,'_wave_',num2str(drs.waveNum),'_info.mat']];
-save(saveFile,'drs');
+% store stim in svc and save
+svc.stim = stim;
+saveFile = [svc.input.path,filesep,[svc.subID,'_wave_',num2str(svc.waveNum),'_info.mat']];
+save(saveFile,'svc');
 
 return
 
