@@ -1,17 +1,29 @@
 %% set variables for saved design info & target directory (to save .txt files)
-svcTextFile = 'materials/svcTraits.txt';
-targetDirectory = '../input';
-NRealSubsTotal = 250;
-NWavesTotal = 3;
-NSubsTotal = NRealSubsTotal * NWavesTotal;
-GAoutputDirectory = 'GAoutput';
-load('gammaDists.mat', 'gammaSVC'); 
+% This script assumes that in your GA output your trait-categories rotate
+% first, and then the prompt types. E.g., with 3 trait-categories and Self
+% and change prompts, we'd get conditions 1 2 3 for self, and 4 5 6 for
+% change.
+
+svcTextFile = 'materials/svcTraits.txt'; % Your word list
+NRealSubsTotal = 250; % the max number of subjects you might run each wave.
+NWavesTotal = 3; % total number of waves for longitudinal studies
+NSubsTotal = NRealSubsTotal * NWavesTotal; % this will be the total number of unique input files generated
+torGAFile = 'GAoutput/torSVCdesign.mat'; % where does the optimization file live?
+load('gammaDists.mat', 'gammaSVC'); % the file that has the jitter delays
+promptTypes=2; % set the number of prompt types manually -- may be able to set automatically in future versions
+
+targetDirectory = '../input'; 
 fid = fopen(svcTextFile,'r');
 svcCell = textscan(fid, '%s%u8%u8%u8','Delimiter',',');
 fclose(fid);
-goodTraits = svcCell{1}(svcCell{2}==1);
-withdrwnTraits = svcCell{1}(svcCell{2}==2);
-aggTraits = svcCell{1}(svcCell{2}==3);
+% goodTraits = svcCell{1}(svcCell{2}==1);
+% withdrwnTraits = svcCell{1}(svcCell{2}==2);
+% aggTraits = svcCell{1}(svcCell{2}==3);
+designFile = [GAoutputDirectory,filesep,(['torSVCdesign.mat'])];
+load(designFile);
+
+traitCategories=unique(svcCell{2});
+numConditions=
 
 % Generate per-run prompt-type conditions to words depending on their trait-category
 % then loop through per run to pull out the right words per block.
@@ -42,8 +54,8 @@ for dCount = 1:NSubsTotal
   % loop over runs
   for rCount = 1:2;
     thisRun = ['run',num2str(rCount)];
-    designFile = [GAoutputDirectory,filesep,(['torSVCdesign.mat'])];
-    load(designFile);  
+    
+      
     svcDesign(dCount).(thisRun).sequence = M.stimlist;
     svcDesign(dCount).(thisRun).condition = ... % strip out the zeros
       svcDesign(dCount).(thisRun).sequence...
