@@ -3,9 +3,8 @@ optDesPath=genpath('/Volumes/research/dsnlab/matlab/CanlabCore/CanlabCore');
 addpath(optDesPath);
 clear Models, clear MM
 
-GA.conditions = [1 2 3]; %self|change x prosoc|insecure|aggressive + rest
-                                 % .5    .5        1/3  1/3  1/3
-GA.freqConditions = [18/50 18/50 14/50]; % this leaves 10 rest events
+GA.conditions = [1 2 3]; %This is within-block conditions prosoc|insecure|aggressive 
+GA.freqConditions = [18/50 18/50 14/50]; % we have more prosoc and insecure words than aggressive trait words....
 GA.scanLength = 282; % 282 / 4.7 = 60 
 GA.ISI = 4.7;  
 GA.TR = 2; 
@@ -46,7 +45,7 @@ AutocorrelationFileName = 'myscannerxc';
 GA.restlength = [1]; 
 GA.restevery = [5]; 
 GA.trans2switch = 0; 
-GA.trans2block = 1; 
+GA.trans2block = 1; %This reproduces the conditions at the type of this file in an ABAB block design
 GA.dofirst = 0; 
 GA.nonlinthreshold = []; 
 % ---------------------------------------------------------------
