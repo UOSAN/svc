@@ -42,8 +42,8 @@ GA.contrasts = [...
 %      ];
 GA.contrastweights = [5 1 1 1 .5 .5 .5];	                      
 AutocorrelationFileName = 'myscannerxc';
-GA.restlength = [1]; 
-GA.restevery = [5]; 
+GA.restlength = [1]; %how long between blocks do you want to rest? Units in ISI
+GA.restevery = [5]; %how many events before rest? This is the number of events within a block
 GA.trans2switch = 0; 
 GA.trans2block = 1; %This reproduces the conditions at the type of this file in an ABAB block design
 GA.dofirst = 0; 
