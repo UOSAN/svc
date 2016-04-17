@@ -1,5 +1,4 @@
-
-# Self versus Change (versus Y) = SvCxY
+# Self versus Change (versus Y) = SvCvY
 
 This task is a generalizable implementation of the self versus change task used in the DSN lab. Users respond 'Yes' or 'No' to a series of words.
 In the default task, they are asked to judge whether a word describes them (Yes or No), and in other blocks,  whether the word describes a trait that
