@@ -4,12 +4,12 @@
 % and change prompts, we'd get conditions 1 2 3 for self, and 4 5 6 for
 % change.
 targetDirectory = '../input';
-svcTextFile = 'materials/svcTraits.txt'; % Your word list
+svcTextFile = 'materials/svcTraitsEXAMPLE.txt'; % Your word list
 studyNamePrefix = 'tag'; %this will prepend each filename
 NRealSubsTotal = 250; % the max number of subjects you might run each wave.
 NWavesTotal = 3; % total number of waves for longitudinal studies
 NSubsTotal = NRealSubsTotal * NWavesTotal; % this will be the total number of unique input files generated
-torGAFile = 'GAoutput/torSVCdesign.mat'; % where does the optimization file live?
+torGAFile = 'GAoutput/torSVCdesignEXAMPLE.mat'; % where does the optimization file live?
 load('gammaDists.mat', 'gammaSVC'); % the file that has the jitter delays
 promptConditionText={ % This needs to contain a number of statements equal to the number of prompt conditions
     'true about me?'

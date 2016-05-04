@@ -7,6 +7,17 @@ can change.
 You should be able to specify a JxK factorial paradigm where J is the number of different prompts (Self, Change, Y...) and K is the number
 of different word types. For example, you may have words that are trait adjectives related to both extraversion and neuroticism.
 
+## Setup
+
+In order to get this project going, you need to supply a task design file created by the GA algorithm in `task/design/optSVCtor.m`, which produces a file that looks like the one in `task/design/GAoutput/torSVCdesignEXAMPLE.mat`, 
+ and a list of trait words like the one in `task/design/materials/svcTraitsEXAMPLE.txt`.
+
+1. Open and edit and set options in `task/design/makeSVCdesigns.m`, and then run it
+2. Run `task/design/makeSVCstimulus.m` (more on this coming soon)
+3. Add `task/code` to your matlab path
+4. Run `getSubInfo()` on the matlab command line
+5. Run `runSVC()` on the matlab command line
+
 ## `~/task`
 
 Contains code and input text to run experiments, design info/materials, task output  
