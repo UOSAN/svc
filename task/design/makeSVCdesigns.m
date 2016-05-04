@@ -4,16 +4,6 @@
 % and change prompts, we'd get conditions 1 2 3 for self, and 4 5 6 for
 % change.
 targetDirectory = '../input';
-warning(['\nThis file will overwrite files already in "' targetDirectory '"']);
-
-button='';
-while ~strcmp(button, 'y')
-    button=input('Do you wish to continue? y/n: ','s');
-    if button == 'n'
-        error('Input file creation aborted');
-    end
-end
-
 svcTextFile = 'materials/svcTraits.txt'; % Your word list
 studyNamePrefix = 'tag'; %this will prepend each filename
 NRealSubsTotal = 250; % the max number of subjects you might run each wave.
@@ -24,8 +14,21 @@ load('gammaDists.mat', 'gammaSVC'); % the file that has the jitter delays
 promptConditionText={ % This needs to contain a number of statements equal to the number of prompt conditions
     'true about me?'
     'can this change?'};
+%
+%END OF USER INPUT
+%%
+%Beginning of script
+%
 
+display(['This file will overwrite files already in "' targetDirectory '"']);
 
+button='';
+while ~strcmp(button, 'y')
+    button=input('Do you wish to continue? y/n: ','s');
+    if button == 'n'
+        error('Input file creation aborted');
+    end
+end
 fid = fopen(svcTextFile,'r');
 svcCell = textscan(fid, '%s%u8%u8%u8','Delimiter',',');
 fclose(fid);
@@ -124,7 +127,9 @@ for dCount = 1:NSubsTotal
             subID = [studyNamePrefix,num2str(subIDNum)];
         end
         
-        fid = fopen([targetDirectory,filesep,subID,'_wave_',num2str(waveNum),'_svc_','run',num2str(rCount),'_input.txt'],'w');
+        filename=[targetDirectory,filesep,subID,'_wave_',num2str(waveNum),'_svc_','run',num2str(rCount),'_input.txt'];
+        display(['Writing ' filename]);
+        fid = fopen(filename,'w');
         formatSpec = '%u,%u,%4.3f,%u,%u,%s\n';
         for tCount = 1:length(word)
             fprintf(fid, formatSpec, tCount, condition(tCount), svcJitter(tCount), reverse(tCount), syllables(tCount), word{tCount});
