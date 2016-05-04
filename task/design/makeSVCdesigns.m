@@ -3,6 +3,16 @@
 % first, and then the prompt types. E.g., with 3 trait-categories and Self
 % and change prompts, we'd get conditions 1 2 3 for self, and 4 5 6 for
 % change.
+targetDirectory = '../input';
+warning(['\nThis file will overwrite files already in "' targetDirectory '"']);
+
+button='';
+while ~strcmp(button, 'y')
+    button=input('Do you wish to continue? y/n: ','s');
+    if button == 'n'
+        error('Input file creation aborted');
+    end
+end
 
 svcTextFile = 'materials/svcTraits.txt'; % Your word list
 studyNamePrefix = 'tag'; %this will prepend each filename
@@ -15,7 +25,7 @@ promptConditionText={ % This needs to contain a number of statements equal to th
     'true about me?'
     'can this change?'};
 
-targetDirectory = '../input';
+
 fid = fopen(svcTextFile,'r');
 svcCell = textscan(fid, '%s%u8%u8%u8','Delimiter',',');
 fclose(fid);
