@@ -19,11 +19,15 @@ fclose(fid);
 % goodTraits = svcCell{1}(svcCell{2}==1);
 % withdrwnTraits = svcCell{1}(svcCell{2}==2);
 % aggTraits = svcCell{1}(svcCell{2}==3);
-designFile = [GAoutputDirectory,filesep,(['torSVCdesign.mat'])];
-load(designFile);
+load(torGAFile);
 
-traitCategories=unique(svcCell{2});
-numConditions=
+traitCategories=unique(svcCell{2}); % how many trait types are in your word list
+numTraitCategories=length(traitCategories);
+numPromptConditions=(length(unique(M.stimlist))-1)./numTraitCategories;
+
+if(mod(numPromptConditions,1)>0)
+    error('Number of conditions in design not divisible by number of trait categories');
+end
 
 % Generate per-run prompt-type conditions to words depending on their trait-category
 % then loop through per run to pull out the right words per block.
