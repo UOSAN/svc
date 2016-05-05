@@ -16,8 +16,10 @@ in `task/design/materials/svcTraitsEXAMPLE.txt`.
 1. Open and edit and set options in `task/design/makeSVCdesigns.m`, and then run it
 2. Run `task/design/makeSVCstimulus.m` (more on this coming soon)
 3. Add `task/code` to your matlab path
-4. Run `getSubInfo()` on the matlab command line
-5. Run `runSVC()` on the matlab command line
+4. You **must** run the following from `svc/task`
+5. Run `getSubInfo()` on the matlab command line
+	- it will ask you to select the study folder -- this will be the `svc/` folder in which you find `task/`, `SVCstim.mat`, and this file, `README.md`. 
+6. Run `runSVC()` on the matlab command line
 
 ## `~/task`
 
