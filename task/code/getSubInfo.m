@@ -4,17 +4,15 @@ function [ svc ] = getSubInfo()
 %   usage: demo = getSubInfo()
 %   takes no input, saves harvested subject info dialog to svc structure
 %
-%   author: wem3
-%   written: 141031
-%   modified: 141104 ~wem3
+%   author: wem3, jflournoy, dcos
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % prompt for study directory (highest level)
-studyDir = uigetdir('~/Documents/code/svc/','Select study directory');
+studyDir = uigetdir('../../svc','Select study directory');
 
 % interactive dialog to get demographic info
 prompt = {...
-'subID: ',...,
+'subID (number only): ',...,
 'experimentor: '...,
 'wave: '};
 
@@ -27,7 +25,7 @@ manualInput = inputdlg(prompt,dTitle,nLines,def);
 
 % the order is funky here because we want the structure output 
 % to be readily readable in summary form (so this, err, isn't)
-svc.subID = ['svc',manualInput{1}];
+svc.subID = manualInput{1};
 svc.studyDir = studyDir;
 svc.subNum = str2num(manualInput{1});
 svc.waveNum = str2num(manualInput{3});
@@ -57,7 +55,7 @@ stim.promptMatrix{2}(:,:,4) = (stim.alpha.delta) ./255;
 
 % store stim in svc and save
 svc.stim = stim;
-saveFile = [svc.input.path,filesep,[svc.subID,'_wave_',num2str(svc.waveNum),'_info.mat']];
+saveFile = [svc.input.path,filesep,['svc',sprintf('%03d',str2num(svc.subID)),'_wave_',num2str(svc.waveNum),'_info.mat']];
 save(saveFile,'svc');
 
 return
