@@ -5,7 +5,6 @@
 % change.
 targetDirectory = '../input';
 svcTextFile = 'materials/svcTraitsEXAMPLE.txt'; % Your word list
-studyNamePrefix = 'tag'; %this will prepend each filename
 NRealSubsTotal = 250; % the max number of subjects you might run each wave.
 NWavesTotal = 3; % total number of waves for longitudinal studies
 NSubsTotal = NRealSubsTotal * NWavesTotal; % this will be the total number of unique input files generated
@@ -19,6 +18,10 @@ promptConditionText={ % This needs to contain a number of statements equal to th
 %%
 %Beginning of script
 %
+
+%A future update will allow this to be user modifiable
+studyNamePrefix = 'svc'; %DO NOT CHANGE THIS this will prepend each filename
+
 
 display(['This file will overwrite files already in "' targetDirectory '"']);
 
@@ -38,13 +41,11 @@ traitCategories=unique(svcCell{2}); % how many trait types are in your word list
 numTraitCategories=length(traitCategories);
 numPromptConditions=(length(unique(M.stimlist))-1)./numTraitCategories;
 
-
-
-% for i=1:numTraitCategories
-%     if mod(sum(svcCell{2}==traitCategories(i)),numPromptConditions) > 0
-%         error('Number of traits in each category not divisible by number of prompt conditions')
-%     end
-% end
+for i=1:numTraitCategories
+    if mod(sum(svcCell{2}==traitCategories(i)),numPromptConditions) > 0
+        error('Number of traits in each category not divisible by number of prompt conditions')
+    end
+end
 
 if(mod(numPromptConditions,1)>0)
     error('Number of conditions in design not divisible by number of trait categories');
