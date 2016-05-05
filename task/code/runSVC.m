@@ -65,7 +65,7 @@ thisRun = ['run',num2str(runNum)];
 % load subject's svc structure
 subInfoFile = ['input', filesep, subID,'_wave_',num2str(waveNum),'_info.mat'];
 load(subInfoFile);
-thisRun = ['run',num2str(runNum)];
+
 if strcmp(thisRun,'run0')
   inputTextFile = [svc.input.path,filesep,'svc_practice_input.txt'];
   subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_rpe_',thisRun,'.mat'];
