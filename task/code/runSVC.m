@@ -9,10 +9,13 @@ function [task] = runSVC(subNumArg, waveNumArg, runNumArg)
 % dependencies:
 %
 %--> (subID)_wave(waveNum)_svc_(runNum).txt = comma delimited text with per trial input
+%--> /design/rundetails.m = script to set details of the run (number of
+%trials per block and condition to prompt mapping).
 %
 %    input text columns (%u,%u,%u,%u,%u,%f%f) 
 %       1. trialNum
-%       2. condition (1-3 == self (good/cool), 4-6 == change (good/cool))
+%       2. condition (prompt type correspondences are set in
+%       /design/run_detauls.m)
 %       3. jitter
 %       4. reverse coded (0 == normal, 1 == reverse coded) 
 %       5. syllables
@@ -79,6 +82,19 @@ end
 fid=fopen(inputTextFile);
 trialMatrix=textscan(fid,'%u%u%f%u%u%s\n','delimiter',',');
 fclose(fid);
+
+% load details about run
+run('./design/run_details.m');
+
+% check that conditions are all accounted for
+
+if (~(all(ismember([rundetails.Prompt_1_Condition_Nums rundetails.Prompt_2_Condition_Nums], ...
+        unique(trialMatrix{2}))) && ...
+        length([rundetails.Prompt_1_Condition_Nums rundetails.Prompt_2_Condition_Nums]) == ...
+        length(unique(trialMatrix{2}))))
+    error('/design/run_details.m conditions do not not match trial conditions')
+end
+    
 
 %% store info from trialMatrix in svc structure
 task.input.raw = [trialMatrix{1} trialMatrix{2} trialMatrix{3} trialMatrix{4} trialMatrix{5}];
@@ -161,7 +177,7 @@ leftKeys = ([svc.keys.b0 svc.keys.b1 svc.keys.b2 svc.keys.b3 svc.keys.b4 svc.key
 rightKeys = ([svc.keys.b5 svc.keys.b6 svc.keys.b7 svc.keys.b8 svc.keys.b9 svc.keys.right]);
 KbQueueCreate(inputDevice, keyList);
 traitSkips = [];
-blockStartTrials = 1:5:50;
+blockStartTrials = 1:rundetails.Trials_Per_Block:50;
 loopStartTime = GetSecs;
 
 %% trial loop
@@ -176,32 +192,15 @@ for tCount = 1:numTrials
   multiTraitResponse = [];
   multiTraitRT =[];
   if find(blockStartTrials==tCount)
-    switch condition
-    case 1 
-      iconMatrix = svc.stim.promptMatrix{1};
-      promptText = 'true about me?';
-      promptColor = svc.stim.promptColors{1};
-    case 2 
-      iconMatrix = svc.stim.promptMatrix{1};
-      promptText = 'true about me?';
-      promptColor = svc.stim.promptColors{1};
-    case 3
-      iconMatrix = svc.stim.promptMatrix{1};
-      promptText = 'true about me?';
-      promptColor = svc.stim.promptColors{1};
-    case 4
-      iconMatrix = svc.stim.promptMatrix{2};
-      promptText = 'can it change?';
-      promptColor = svc.stim.promptColors{2};
-    case 5
-      iconMatrix = svc.stim.promptMatrix{2};
-      promptText = 'can it change?';
-      promptColor = svc.stim.promptColors{2};
-    case 6
-      iconMatrix = svc.stim.promptMatrix{2};
-      promptText = 'can it change?';
-      promptColor = svc.stim.promptColors{2};
-    end
+      if ismember(condition, rundetails.Prompt_1_Condition_Nums)
+          iconMatrix = svc.stim.promptMatrix{1};
+          promptText = rundetails.Prompt_1_text;
+          promptColor = svc.stim.promptColors{1};
+      elseif ismember(condition, rundetails.Prompt_2_Condition_Nums)
+          iconMatrix = svc.stim.promptMatrix{2};
+          promptText = rundetails.Prompt_2_text;
+          promptColor = svc.stim.promptColors{2};
+      end
     
     % draw prompt with instructions
     iconTex = Screen('MakeTexture',win,iconMatrix);
