@@ -10,7 +10,9 @@ NWavesTotal = 3; % total number of waves for longitudinal studies
 NSubsTotal = NRealSubsTotal * NWavesTotal; % this will be the total number of unique input files generated
 torGAFile = 'GAoutput/torSVCdesignEXAMPLE.mat'; % where does the optimization file live?
 load('gammaDists.mat', 'gammaSVC'); % the file that has the jitter delays
-promptConditionText={ % This needs to contain a number of statements equal to the number of prompt conditions
+%The below is currently only for your record -- it does not yet change the prompts
+%This needs to contain a number of statements equal to the number of prompt conditions
+promptConditionText={ 
     'true about me?'
     'can this change?'};
 %
@@ -23,7 +25,7 @@ promptConditionText={ % This needs to contain a number of statements equal to th
 studyNamePrefix = 'svc'; %DO NOT CHANGE THIS this will prepend each filename
 
 
-display(['This file will overwrite files already in "' targetDirectory '"']);
+display(['This file may overwrite files already in "' targetDirectory '"']);
 
 button='';
 while ~strcmp(button, 'y')
@@ -32,8 +34,8 @@ while ~strcmp(button, 'y')
         error('Input file creation aborted');
     end
 end
-fid = fopen(svcTextFile,'r');
-svcCell = textscan(fid, '%s%u8%u8%u8','Delimiter',',');
+fid = fopen(svcTextFile,'rt');
+svcCell = textscan(fid, '%s%u8%u8%u8','Delimiter',',','EndOfLine','\r\n');
 fclose(fid);
 load(torGAFile);
 
