@@ -6,20 +6,8 @@ function drawTrait(win, stim, trait, condition, alphas)
 %               ~wem3 - 141117
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-switch condition
-case 1 
-  iconMatrix = stim.promptMatrix{1};
-case 2 
-  iconMatrix = stim.promptMatrix{1};
-case 3
-  iconMatrix = stim.promptMatrix{1};
-case 4
-  iconMatrix = stim.promptMatrix{2};
-case 5
-  iconMatrix = stim.promptMatrix{2};
-case 6
-  iconMatrix = stim.promptMatrix{2};
-end
+ 
+iconMatrix = stim.promptMatrix{stim.promptIndex};
 
 % draw prompt
 iconTex = Screen('MakeTexture',win,iconMatrix);

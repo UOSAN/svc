@@ -12,12 +12,12 @@ function [task] = runSVC(subNumArg, waveNumArg, runNumArg)
 %--> /design/rundetails.m = script to set details of the run (number of
 %trials per block and condition to prompt mapping).
 %
-%    input text columns (%u,%u,%u,%u,%u,%f%f) 
+%    input text columns (%u,%u,%u,%u,%u,%f%f)
 %       1. trialNum
 %       2. condition (prompt type correspondences are set in
 %       /design/run_detauls.m)
 %       3. jitter
-%       4. reverse coded (0 == normal, 1 == reverse coded) 
+%       4. reverse coded (0 == normal, 1 == reverse coded)
 %       5. syllables
 %       6. trait (string w/ trait adjective)
 %
@@ -30,9 +30,9 @@ switch nargin
     case 0
         clear all;
         prompt = {...
-        'sub num: ',...
-        'wave num: ',...
-        'run num: '};
+            'sub num: ',...
+            'wave num: ',...
+            'run num: '};
         dTitle = 'Input Subject, Wave, and Run Number';
         nLines = 1;
         % defaults
@@ -55,11 +55,11 @@ Screen('Preference', 'SkipSyncTests', 1);
 
 %% get subID from subNum
 if subNum < 10
-  subID = ['svc00',num2str(subNum)];
+    subID = ['svc00',num2str(subNum)];
 elseif subNum < 100
-  subID = ['svc0',num2str(subNum)];
+    subID = ['svc0',num2str(subNum)];
 else
-  subID = ['svc',num2str(subNum)];
+    subID = ['svc',num2str(subNum)];
 end
 
 % get thisRun from runNum
@@ -70,12 +70,12 @@ subInfoFile = ['input', filesep, subID,'_wave_',num2str(waveNum),'_info.mat'];
 load(subInfoFile);
 
 if strcmp(thisRun,'run0')
-  inputTextFile = [svc.input.path,filesep,'svc_practice_input.txt'];
-  subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_rpe_',thisRun,'.mat'];
+    inputTextFile = [svc.input.path,filesep,'svc_practice_input.txt'];
+    subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_rpe_',thisRun,'.mat'];
 else
-  subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'.mat'];
-  inputTextFile = [svc.input.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_input.txt'];
-  outputTextFile = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_output.txt'];
+    subOutputMat = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'.mat'];
+    inputTextFile = [svc.input.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_input.txt'];
+    outputTextFile = [svc.output.path,filesep,subID,'_wave_',num2str(waveNum),'_svc_',thisRun,'_output.txt'];
 end
 
 % load trialMatrix
@@ -84,7 +84,7 @@ trialMatrix=textscan(fid,'%u%u%f%u%u%s\n','delimiter',',');
 fclose(fid);
 
 % load details about run
-run('./design/run_details.m');
+run(fullfile(svc.studyDir, 'task/design/run_details.m'));
 
 % check that conditions are all accounted for
 
@@ -94,7 +94,7 @@ if (~(all(ismember([rundetails.Prompt_1_Condition_Nums rundetails.Prompt_2_Condi
         length(unique(trialMatrix{2}))))
     error('/design/run_details.m conditions do not not match trial conditions')
 end
-    
+
 
 %% store info from trialMatrix in svc structure
 task.input.raw = [trialMatrix{1} trialMatrix{2} trialMatrix{3} trialMatrix{4} trialMatrix{5}];
@@ -153,13 +153,13 @@ end
 
 % remind em' not to squirm!
 DrawFormattedText(win, 'Getting scan ready...\n\n hold really still!',...
-  'center', 'center', svc.stim.white);
+    'center', 'center', svc.stim.white);
 [~,calibrationOnset] = Screen('Flip', win);
 
 % trigger pulse code (disabled for debug)
 disp(svc.keys.trigger);
 if runNum == 0
-    internalKeyboardDevice = inputDevice; % added this statement so I could run it on my laptop. Can delete later -DCos 
+    internalKeyboardDevice = inputDevice; % added this statement so I could run it on my laptop. Can delete later -DCos
     KbStrokeWait(internalKeyboardDevice);
 else
     KbTriggerWait(svc.keys.trigger,inputDevice); % note: no problems leaving out 'inputDevice' in the mock, but MUST INCLUDE FOR SCANNER
@@ -182,45 +182,47 @@ loopStartTime = GetSecs;
 
 %% trial loop
 for tCount = 1:numTrials
-  %% set variables for this trial
-  condition = trialMatrix{2}(tCount);
-  traitJitter = trialMatrix{3}(tCount);
-  trait = trialMatrix{6}{tCount};
-  traitResponse = 0;
-  traitRT = NaN;
-  chose = 0;
-  multiTraitResponse = [];
-  multiTraitRT =[];
-  if find(blockStartTrials==tCount)
-      if ismember(condition, rundetails.Prompt_1_Condition_Nums)
-          iconMatrix = svc.stim.promptMatrix{1};
-          promptText = rundetails.Prompt_1_text;
-          promptColor = svc.stim.promptColors{1};
-      elseif ismember(condition, rundetails.Prompt_2_Condition_Nums)
-          iconMatrix = svc.stim.promptMatrix{2};
-          promptText = rundetails.Prompt_2_text;
-          promptColor = svc.stim.promptColors{2};
-      end
+    %% set variables for this trial
+    condition = trialMatrix{2}(tCount);
+    traitJitter = trialMatrix{3}(tCount);
+    trait = trialMatrix{6}{tCount};
+    traitResponse = 0;
+    traitRT = NaN;
+    chose = 0;
+    multiTraitResponse = [];
+    multiTraitRT =[];
+    if find(blockStartTrials==tCount)
+        if ismember(condition, rundetails.Prompt_1_Condition_Nums)
+            iconMatrix = svc.stim.promptMatrix{1};
+            promptText = rundetails.Prompt_1_text;
+            promptColor = svc.stim.promptColors{1};
+            svc.stim.promptIndex=1;
+        elseif ismember(condition, rundetails.Prompt_2_Condition_Nums)
+            iconMatrix = svc.stim.promptMatrix{2};
+            promptText = rundetails.Prompt_2_text;
+            promptColor = svc.stim.promptColors{2};
+            svc.stim.promptIndex=2;
+        end
+        
+        % draw prompt with instructions
+        iconTex = Screen('MakeTexture',win,iconMatrix);
+        Screen('DrawTexture',win,iconTex,[],svc.stim.box.prompt);
+        Screen('TextSize', win, 80);
+        Screen('TextFont', win, 'Arial');
+        DrawFormattedText( win, promptText, 'center', 'center', promptColor );
+        Screen('Flip',win);
+        WaitSecs(4.7);
+    end
     
-    % draw prompt with instructions
-    iconTex = Screen('MakeTexture',win,iconMatrix);
-    Screen('DrawTexture',win,iconTex,[],svc.stim.box.prompt);
-    Screen('TextSize', win, 80);
-    Screen('TextFont', win, 'Arial');
-    DrawFormattedText( win, promptText, 'center', 'center', promptColor );
-    Screen('Flip',win);
-    WaitSecs(4.7);
-  end
-  
-  %% call draw function
-  drawTrait(win,svc.stim,trait,condition,[0.5 0.5]);
-  KbQueueStart(inputDevice);
-  
-  % flip the screen to show trait
-  [~,traitOnset] = Screen('Flip',win);
-  
-  %loop for response
-  while (GetSecs - traitOnset) < 4.7
+    %% call draw function
+    drawTrait(win,svc.stim,trait,condition,[0.5 0.5]);
+    KbQueueStart(inputDevice);
+    
+    % flip the screen to show trait
+    [~,traitOnset] = Screen('Flip',win);
+    
+    %loop for response
+    while (GetSecs - traitOnset) < 4.7
     [ pressed, firstPress]=KbQueueCheck(inputDevice);
       if pressed
         if chose == 0
@@ -244,15 +246,15 @@ for tCount = 1:numTrials
   drawTrait(win,svc.stim,' ',condition,[0.5 0.5]);
   Screen('Flip',win);
   if traitJitter > 4.7
-    [~,traitOffset] = Screen('Flip',win);
+      [~,traitOffset] = Screen('Flip',win);
   else
-    traitOffset = GetSecs;
+      traitOffset = GetSecs;
   end
   WaitSecs('UntilTime',(traitOnset + 4.7 + traitJitter));
   
   %%
   if traitResponse == 0
-    traitSkips = [traitSkips tCount];
+      traitSkips = [traitSkips tCount];
   end
   % assign output for each trial to task.(thisRun).output.raw matrix
   task.output.raw(tCount,1) = tCount;
@@ -263,7 +265,7 @@ for tCount = 1:numTrials
   task.output.raw(tCount,6) = trialMatrix{4}(tCount);
   task.output.raw(tCount,7) = trialMatrix{5}(tCount);
   save(subOutputMat,'task');
-
+  
 end
 KbQueueRelease(inputDevice);
 % End of experiment screen. We clear the screen once they have made their
@@ -273,18 +275,18 @@ DrawFormattedText(win, 'Scan Complete! \n\nWe will check in momentarily...',...
 Screen('Flip', win);
 
 if runNum ~= 0
-  fid=fopen(outputTextFile,'a');
-  for tCount = 1:numTrials
-    fprintf(fid,'%u,%u,%4.3f,%4.3f,%u,%u,%u,%s\n',...
-    task.output.raw(tCount,1:7), task.input.trait{tCount});
-  end
-  fclose(fid);
-  task.calibration = calibrationOnset;
-  task.triggerPulse = triggerPulseTime;
-  task.output.skips = traitSkips;
-  task.output.multi.response = multiTraitResponse;
-  task.output.multi.RT = multiTraitRT;
-  save(subOutputMat,'task');
+    fid=fopen(outputTextFile,'a');
+    for tCount = 1:numTrials
+        fprintf(fid,'%u,%u,%4.3f,%4.3f,%u,%u,%u,%s\n',...
+            task.output.raw(tCount,1:7), task.input.trait{tCount});
+    end
+    fclose(fid);
+    task.calibration = calibrationOnset;
+    task.triggerPulse = triggerPulseTime;
+    task.output.skips = traitSkips;
+    task.output.multi.response = multiTraitResponse;
+    task.output.multi.RT = multiTraitRT;
+    save(subOutputMat,'task');
 end
 
 KbStrokeWait(internalKeyboardDevice);
