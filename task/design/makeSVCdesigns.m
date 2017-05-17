@@ -10,6 +10,18 @@ NWavesTotal = 3; % total number of waves for longitudinal studies
 NSubsTotal = NRealSubsTotal * NWavesTotal; % this will be the total number of unique input files generated
 torGAFile = 'GAoutput/torSVCdesignEXAMPLE.mat'; % where does the optimization file live?
 load('gammaDists.mat', 'gammaSVC'); % the file that has the jitter delays
+
+%NOTE ON GAMMA DISTRIBUTED JITTER%
+%These 42 jitter values were generated externally
+%The distribution they were drawn from has roughly the following parameters
+%using the shape (alpha or a below) and rate (beta or b below) parameterization 
+% (paramters estimated using MLE):
+%
+%Coefficients:
+%    Estimate  Std. Error
+%a 3.44089064 0.640213766
+%b 0.01241903 0.002471538
+
 %The below is currently only for your record -- it does not yet change the prompts
 %This needs to contain a number of statements equal to the number of prompt conditions
 promptConditionText={ 
