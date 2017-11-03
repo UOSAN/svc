@@ -158,7 +158,7 @@ DrawFormattedText(win, 'Getting scan ready...\n\n hold really still!',...
 
 % trigger pulse code (disabled for debug)
 disp(svc.keys.trigger);
-if runNum == 0
+if runNum == 1 %%%%%%%% CHANGE THIS TO 0 %%%%%%%%%
     internalKeyboardDevice = inputDevice; % added this statement so I could run it on my laptop. Can delete later -DCos
     KbStrokeWait(internalKeyboardDevice);
 else

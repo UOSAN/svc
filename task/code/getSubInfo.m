@@ -8,7 +8,7 @@ function [ svc ] = getSubInfo()
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % prompt for study directory (highest level)
-studyDir = uigetdir('../../svc','Select study directory');
+studyDir = uigetdir('../svc','Select study directory');
 
 % interactive dialog to get demographic info
 prompt = {...

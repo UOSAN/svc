@@ -5,8 +5,8 @@
 % change.
 targetDirectory = '../input';
 svcTextFile = 'materials/svcTraitsEXAMPLE.txt'; % Your word list
-NRealSubsTotal = 250; % the max number of subjects you might run each wave.
-NWavesTotal = 3; % total number of waves for longitudinal studies
+NRealSubsTotal = 50; % the max number of subjects you might run each wave.
+NWavesTotal = 1; % total number of waves for longitudinal studies
 NSubsTotal = NRealSubsTotal * NWavesTotal; % this will be the total number of unique input files generated
 torGAFile = 'GAoutput/torSVCdesignEXAMPLE.mat'; % where does the optimization file live?
 load('gammaDists.mat', 'gammaSVC'); % the file that has the jitter delays
