@@ -4,7 +4,7 @@ addpath(optDesPath);
 clear Models, clear MM
 
 GA.conditions = [1 2 3]; %This is within-block conditions prosoc|insecure|aggressive 
-GA.freqConditions = [18/50 18/50 14/50]; % we have more prosoc and insecure words than aggressive trait words....
+GA.freqConditions = [.33 .33 .33]; % we have more prosoc and insecure words than aggressive trait words....
 GA.scanLength = 282; % 282 / 4.7 = 60 
 GA.ISI = 4.7;  
 GA.TR = 2; 
