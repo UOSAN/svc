@@ -211,7 +211,7 @@ for tCount = 1:numTrials
         Screen('TextFont', win, 'Arial');
         DrawFormattedText( win, promptText, 'center', 'center', promptColor );
         Screen('Flip',win);
-        WaitSecs(4.7);
+        WaitSecs(4.7);  % change this
     end
     
     %% call draw function
@@ -222,7 +222,7 @@ for tCount = 1:numTrials
     [~,traitOnset] = Screen('Flip',win);
     
     %loop for response
-    while (GetSecs - traitOnset) < 4.7
+    while (GetSecs - traitOnset) < 4.7 % % change this
     [ pressed, firstPress]=KbQueueCheck(inputDevice);
       if pressed
         if chose == 0
@@ -250,7 +250,7 @@ for tCount = 1:numTrials
   else
       traitOffset = GetSecs;
   end
-  WaitSecs('UntilTime',(traitOnset + 4.7 + traitJitter));
+  WaitSecs('UntilTime',(traitOnset + 4.7 + traitJitter));  % change this
   
   %%
   if traitResponse == 0
@@ -276,7 +276,7 @@ Screen('Flip', win);
 
 if runNum ~= 0
     fid=fopen(outputTextFile,'a');
-    for tCount = 1:numTrials
+    for tCount = 1:numTrialstask/code/runSVC.m
         fprintf(fid,'%u,%u,%4.3f,%4.3f,%u,%u,%u,%s\n',...
             task.output.raw(tCount,1:7), task.input.trait{tCount});
     end
