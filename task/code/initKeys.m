@@ -31,7 +31,8 @@ for deviceCount=1:length(devices),
     deviceNum = deviceCount;
     break,
   elseif ((strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Mitsumi Electric')) ...
-          || (strcmp(devices(deviceCount).usageName,'Keyboard') && strcmp(devices(deviceCount).manufacturer,'Apple, Inc.'))),
+          || (strcmp(devices(deviceCount).transport,'USB') && strcmp(devices(deviceCount).manufacturer,'Apple, Inc.'))...
+          || (strcmp(devices(deviceCount).transport,'SPI') && strcmp(devices(deviceCount).product,'Apple Internal Keyboard / Trackpad'))),
     keys.bbox = deviceCount;
     keys.trigger = KbName('t'); % use 't' as KbTrigger
     detectButtonBox = false;
