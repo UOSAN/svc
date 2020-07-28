@@ -1,5 +1,6 @@
 # Ignore task output
 task/output/*
+data/
 # Ignore generated onset .txt files
 bx/onset_files
 bx/onset_files/*
