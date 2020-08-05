@@ -60,7 +60,9 @@ psychoJS.start({
   expInfo: expInfo,
   resources: [
   {name: 'resources/yes.png', path: './resources/resources/yes.png'},
+  {name: 'resources/yes_transparent.png', path: './resources/resources/yes_transparent.png'},
   {name: 'resources/no.png', path: './resources/resources/no.png'},
+  {name: 'resources/no_transparent.png', path: './resources/resources/no_transparent.png'},
   {name: 'resources/delta-200-orange.png', path: './resources/resources/delta-200-orange.png'},
   {name: 'resources/delta-200-purple.png', path: './resources/resources/delta-200-purple.png'},
   {name: 'resources/self-200-orange.png', path: './resources/resources/self-200-orange.png'},
@@ -603,11 +605,14 @@ function trialRoutineEachFrame(trials) {
       if (_key_resp_allKeys.length > 0) {
         key_resp.keys = _key_resp_allKeys[_key_resp_allKeys.length - 1].name;  // just the last key pressed
         key_resp.rt = _key_resp_allKeys[_key_resp_allKeys.length - 1].rt;
-        // a response ends the routine
-        continueRoutine = false;
+        // Set the other image to a more transparent, to de-emphasize it and provide some feedback.
+        if (key_resp.keys === 'right' || key_resp.keys === 'period') {
+          yes_image.setImage('resources/yes_transparent.png')
+        } else if (key_resp.keys === 'left' || key_resp.keys === 'comma') {
+          no_image.setImage('resources/no_transparent.png')
+        }
       }
     }
-    
     
     // *yes_image* updates
     if (t >= 0.0 && yes_image.status === PsychoJS.Status.NOT_STARTED) {
@@ -636,6 +641,17 @@ function trialRoutineEachFrame(trials) {
     if (no_image.status === PsychoJS.Status.STARTED && t >= frameRemains) {
       no_image.setAutoDraw(false);
     }
+
+    // If there has been a key press, end the routine after 0.25 seconds
+    frameRemains = 0.25 - psychoJS.window.monitorFramePeriod * 0.75;  // most of one frame period left
+    if (key_resp.keys !== undefined && t >= key_resp.rt + frameRemains) {
+      no_image.setAutoDraw(false);
+      yes_image.setAutoDraw(false);
+      no_image.setImage('resources/no.png')
+      yes_image.setImage('resources/yes.png')
+      continueRoutine = false;
+    }
+
     // check for quit (typically the Esc key)
     if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0) {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
