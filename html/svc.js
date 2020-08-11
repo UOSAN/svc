@@ -113,6 +113,7 @@ var trialClock;
 var image_prompt;
 var trait_text;
 var key_resp;
+var touch_resp;
 var yes_image;
 var no_image;
 var ISIClock;
@@ -192,7 +193,12 @@ function experimentInit() {
   });
   
   key_resp = new core.Keyboard({psychoJS: psychoJS, clock: new util.Clock(), waitForStart: true});
-  
+
+  touch_resp = new core.Mouse({
+    win: psychoJS.window,
+  });
+  touch_resp.mouseClock = new util.Clock();
+
   yes_image = new visual.ImageStim({
     win : psychoJS.window,
     name : 'yes_image', units : undefined, 
@@ -271,6 +277,8 @@ function instructionsRoutineBegin(trials) {
 
 var frameRemains;
 var continueRoutine;
+var prevButtonState;
+var gotValidClick;
 function instructionsRoutineEachFrame(trials) {
   return function () {
     //------Loop for each frame of Routine 'instructions'-------
@@ -531,6 +539,10 @@ function trialRoutineBegin(trials) {
     key_resp.keys = undefined;
     key_resp.rt = undefined;
     _key_resp_allKeys = [];
+    // setup some python lists for storing info about the touch_resp
+    touch_resp.time = [];
+    touch_resp.clicked_name = [];
+
     yes_image.setColor(new util.Color([1, 1, 1]));
     yes_image.setImage('resources/yes.png');
     // keep track of which components have finished
@@ -538,6 +550,7 @@ function trialRoutineBegin(trials) {
     trialComponents.push(image_prompt);
     trialComponents.push(trait_text);
     trialComponents.push(key_resp);
+    trialComponents.push(touch_resp);
     trialComponents.push(yes_image);
     trialComponents.push(no_image);
     
@@ -613,7 +626,38 @@ function trialRoutineEachFrame(trials) {
         }
       }
     }
-    
+
+    // *touch_resp* updates
+    if (t >= 0.0 && touch_resp.status === PsychoJS.Status.NOT_STARTED) {
+      // keep track of start time/frame for later
+      touch_resp.tStart = t;  // (not accounting for frame time here)
+      touch_resp.frameNStart = frameN;  // exact frame index
+
+      touch_resp.status = PsychoJS.Status.STARTED;
+      touch_resp.mouseClock.reset();
+      prevButtonState = touch_resp.getPressed();  // if button is down already this ISN'T a new click
+    }
+    if (touch_resp.status === PsychoJS.Status.STARTED) {  // only update if started and not finished!
+      let buttons = touch_resp.getPressed();
+      if (!buttons.every( (e,i,) => (e == prevButtonState[i]) )) { // button state changed?
+        prevButtonState = buttons;
+        if (buttons.reduce( (e, acc) => (e+acc) ) > 0) { // state changed to a new click
+          touch_resp.time.push(touch_resp.mouseClock.getTime());
+          // check if the mouse was inside our 'clickable' objects
+          gotValidClick = false;
+          for (const obj of [yes_image, no_image]) {
+            if (obj.contains(touch_resp)) {
+              gotValidClick = true;
+              touch_resp.clicked_name.push(obj.name)
+            }
+          }
+          if (gotValidClick === true) { // abort routine on response
+            continueRoutine = false;
+          }
+        }
+      }
+    }
+
     // *yes_image* updates
     if (t >= 0.0 && yes_image.status === PsychoJS.Status.NOT_STARTED) {
       // keep track of start time/frame for later
@@ -694,6 +738,11 @@ function trialRoutineEnd(trials) {
         }
     
     key_resp.stop();
+
+    // store data for thisExp (ExperimentHandler)
+    if (touch_resp.time) {  psychoJS.experiment.addData('touch_resp.time', touch_resp.time[0])}
+    if (touch_resp.clicked_name) {  psychoJS.experiment.addData('touch_resp.clicked_name', touch_resp.clicked_name[0])}
+
     // the Routine "trial" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset();
     
